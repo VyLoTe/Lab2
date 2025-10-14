@@ -1,0 +1,125 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+	ViewData["Title"] = "Student List";
+	Layout = "~/Views/Shared/MyLayoutHelper.cshtml";
+}
+@model IEnumerable<Lab2.Models.Student>
+<a asp-route="AddStudent" class="btn btn-primary">Create Student</a>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>    
+}
+@await Component.InvokeAsync("Major")
+<!-- Thêm form tìm kiếm -->
+<form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+    <div class="input-group">
+        <input id="keyword" class="form-control" name="keyword"
+               type="text" placeholder="Search student" />
+        <button id="btnSearch" class="btn btn-primary" type="button">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+</form>
+
+<div id="content">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Avatar</th>
+                <th>Mã</th>
+                <th>Họ tên</th>
+                <th>Ngày sinh</th>
+                <th>Ngành</th>
+                <th>Giới tính</th>
+                <th>Hệ ĐT</th>
+                <th>Địa chỉ</th>
+                <th>Email</th>
+                <th>Điểm</th>
+                <th>Chức năng</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(s.AvatarPath))
+                        {
+                            <img src="@Url.Content(s.AvatarPath)" alt="Avatar" style="width:60px;height:60px;border-radius:50%;" />
+                        }
+                        else
+                        {
+                            <span>No Image</span>
+                        }
+                    </td>
+                    <td>@s.Id</td>
+                    <td>@s.Name</td>
+                    <td>@s.DateOfBorth</td>
+                    <td>@(s.Major != null ? s.Major.MajorName : "No Major")</td>
+                    <td>@(s.Gender == Gender.Male ? "Nam" : "Nữ")</td>
+                    <td>@(s.IsRegular ? "Chính quy" : "Phi chính quy")</td>
+                    <td>@s.Address</td>
+                    <td>@s.Email</td>
+                    <td>@s.Score</td>
+                    <td>
+                        <a asp-route="EditStudent" asp-route-id="@s.Id">Edit</a> | <a asp-route="DeleteStudent" asp-route-id="@s.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <!-- Thêm thanh nav - phân trang -->
+    <ul class="pagination">
+        @for (int i = 1; i <= ViewBag.pageNum; i++)
+        {
+            <li style="cursor:pointer" class="page-item" page="@i"
+                @(ViewBag.mid != null ? "mid='ViewBag.mid'" : "")
+                @(ViewBag.keyword != null ? "keyword='ViewBag.keyword'" : "")> 
+                <a class="page-link" style="cursor:pointer">@i</a>
+            </li>
+        }
+    </ul>
+</div>
+@section Scripts {
+    <script>
+        $('body').on('click', 'li.page-item', function (e) {
+            var page = $(this).attr("page");
+            var mid = $(this).attr("mid");
+            var keyword = $(this).attr("keyword");
+            var data = { mid: mid, keyword: keyword, pageIndex: page };
+            $.ajax({
+                url: "/Admin/Student/StudentFilter",
+                data: data,
+                success: function (response) {
+                    $("div#content").html(response);
+                }
+            });
+        });
+
+        $(".nav li").click(function (e) {
+            var id = $(this).attr("id");
+            var data = { mid: id };
+            $.ajax({
+                url: "/Admin/Student/StudentFilter",
+                data: data,
+                success: function (response) {
+                    $("div#content").html(response);
+                }
+            });
+        });
+
+        $("button#btnSearch").click(function (e) {
+            var keyword = $("#keyword").val();
+            var data = { keyword: keyword };
+            $.ajax({
+                url: "/Admin/Student/StudentFilter",
+                data: data,
+                success: function (response) {
+                    $("div#content").html(response);
+                }
+            });
+        });
+    </script>
+}

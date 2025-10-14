@@ -1,0 +1,149 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model Lab2.Models.Student
+<h1>Sửa thông tin</h1>
+
+<form asp-route="EditStudent" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row">
+        <!-- Cột trái -->
+        <div class="col-md-8">
+            <div class="form-group mb-3">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" type="password" placeholder="(Giữ trống nếu không đổi)" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="MajorID">Ngành học</label>
+                <select asp-for="MajorID" asp-items="ViewBag.AllMajors" class="form-select">
+                    <option value="">-- Chọn ngành học --</option>
+                </select>
+                <span asp-validation-for="MajorID" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group mb-3">
+                <label asp-for="Gender">Giới tính</label>
+                <select asp-for="Gender" asp-items="@(new SelectList(ViewBag.AllGenders))" class="form-select"></select>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="IsRegular" class="form-check-input" />
+                <label asp-for="IsRegular" class="form-check-label">Chính quy</label>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="DateOfBorth">Ngày sinh</label>
+                <input asp-for="DateOfBorth" type="date" class="form-control" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Address"></label>
+                <textarea asp-for="Address" class="form-control"></textarea>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Score"></label>
+                <input asp-for="Score" class="form-control" />
+            </div>
+        </div>
+
+        <!-- Cột phải -->
+        <div class="col-md-4" style="margin-top:7px; display:flex; justify-content:center;">
+            <!-- Input file ẩn -->
+            <input type="file" name="file" id="fileInput" style="display:none" accept="image/*" />
+
+            <!-- Vòng tròn hiển thị ảnh -->
+            <label for="fileInput" style="
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 2px dashed #007bff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        overflow: hidden;
+        position: relative;
+    ">
+                <!-- Hiển thị ảnh hiện tại -->
+                <img id="preview"
+                     src="@(!string.IsNullOrEmpty(Model.AvatarPath) ? Model.AvatarPath : "")"
+                     alt="Ảnh đại diện"
+                     style="width: 100%; height: 100%; object-fit: cover; @(string.IsNullOrEmpty(Model.AvatarPath) ? "display:none;" : "")" />
+
+                <!-- Placeholder nếu chưa có ảnh -->
+                <span id="placeholder" style="color:#007bff; font-size:14px; @(string.IsNullOrEmpty(Model.AvatarPath) ? "" : "display:none;")">
+                    Chọn ảnh
+                </span>
+
+                <!-- Nút thay đổi (hiện khi hover) -->
+                <div id="overlay" style="
+            position: absolute;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            width: 100%;
+            text-align: center;
+            font-size: 13px;
+            padding: 5px 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        ">
+                    Thay ảnh
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById("fileInput");
+        const preview = document.getElementById("preview");
+        const placeholder = document.getElementById("placeholder");
+        const overlay = document.getElementById("overlay");
+
+        // Khi hover vào vòng tròn -> hiện overlay "Thay ảnh"
+        overlay.parentElement.addEventListener("mouseenter", () => {
+            overlay.style.opacity = 1;
+        });
+        overlay.parentElement.addEventListener("mouseleave", () => {
+            overlay.style.opacity = 0;
+        });
+
+        // Khi người dùng chọn file mới
+        fileInput.addEventListener("change", (event) => {
+            const [file] = event.target.files;
+            if (file) {
+                const objectUrl = URL.createObjectURL(file);
+                preview.src = objectUrl;
+                preview.style.display = "block";
+                placeholder.style.display = "none";
+            } else {
+                preview.src = "";
+                preview.style.display = "none";
+                placeholder.style.display = "block";
+            }
+        });
+    </script>
+</form>

@@ -1,0 +1,56 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model Lab2.Models.Student
+
+@{
+    ViewData["Title"] = "Xác nhận xóa sinh viên";
+}
+
+<h2 class="text-danger">@ViewData["Title"]</h2>
+<hr />
+
+@if (!string.IsNullOrEmpty(Model.AvatarPath))
+{
+    <div class="mb-3">
+        <img src="@Url.Content(Model.AvatarPath)" alt="Avatar" style="max-width: 150px; border-radius: 10px;" />
+    </div>
+}
+
+<dl class="row">
+    <dt class="col-sm-3">Mã sinh viên</dt>
+    <dd class="col-sm-9">@Model.Id</dd>
+
+    <dt class="col-sm-3">Họ tên</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
+
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.Email</dd>
+
+    <dt class="col-sm-3">Ngành học</dt>
+    <dd class="col-sm-9">@Model.Major?.MajorName</dd>
+
+    <dt class="col-sm-3">Giới tính</dt>
+    <dd class="col-sm-9">@Model.Gender</dd>
+
+    <dt class="col-sm-3">Ngày sinh</dt>
+    <dd class="col-sm-9">@Model.DateOfBorth.ToString("dd/MM/yyyy")</dd>
+
+    <dt class="col-sm-3">Điểm</dt>
+    <dd class="col-sm-9">@Model.Score</dd>
+
+    <dt class="col-sm-3">Địa chỉ</dt>
+    <dd class="col-sm-9">@Model.Address</dd>
+</dl>
+
+<div class="alert alert-warning mt-3">
+    <strong>Cảnh báo:</strong> Dữ liệu này sẽ bị xóa vĩnh viễn khỏi hệ thống.
+</div>
+
+<form asp-route="DeleteStudent" asp-route-id="@Model.Id" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>
